@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from 'react-router-dom';
 import Home from './views/Home';
+import Login from './components/Login';
+import MainContainer from './components/MainContainer';
+import './scss/main.scss';
 
 export default function Routes() {
-  const [user, setUser] = useState('HOLA');
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setUser('HOLA MUNDO');
-  };
   return (
     <Router>
       <Switch>
@@ -19,10 +17,12 @@ export default function Routes() {
           exact
           path="/"
         >
-          <Home user={user} handleLogin={handleLogin} />
+          <Home />
         </Route>
-        <Route path="/about">
-          {/* <About /> */}
+        <Route path="/register">
+          <MainContainer>
+            <Login register="true" />
+          </MainContainer>
         </Route>
         <Route path="/dashboard">
           {/* <Dashboard /> */}

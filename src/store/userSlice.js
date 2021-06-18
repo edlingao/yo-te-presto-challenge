@@ -2,13 +2,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const exampleSlice = createSlice({
-  name: 'User',
+  name: 'loggedStatus',
   initialState: {
-    value: [],
+    value: 'Unauthorized',
   },
   reducers: {
     login(state, { payload }) {
-      console.log({ state, payload });
       state.value = payload;
     },
     logout(state, action) {

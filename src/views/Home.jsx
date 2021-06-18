@@ -1,29 +1,25 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import logo from '../svg/logo.svg';
+// import PropTypes from 'prop-types';
+// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import Login from '../components/Login';
+import MainContainer from '../components/MainContainer';
 
-const LoginForm = styled.form`
-  .header {
-    background: black;
-  }
-`;
 export default function Home() {
-  const userExample = useSelector((state) => state.user.value);
-  const dispatch = useDispatch();
-
+  const authToken = useSelector((state) => state.loggedStatus.value);
+  // const dispatch = useDispatch();
   return (
-    <LoginForm>
-      <div className="header">
-        <img alt="Code Blog" src={logo} />
-      </div>
-
-    </LoginForm>
+    <MainContainer>
+      {
+        authToken === 'Unauthorized'
+          ? <Login />
+          : <h1>Autorizado</h1>
+      }
+    </MainContainer>
   );
 }
 
-Home.propTypes = {
-  user: PropTypes.string.isRequired,
-  handleLogin: PropTypes.func.isRequired,
-};
+// Home.propTypes = {
+//   user: PropTypes.string.isRequired,
+//   handleLogin: PropTypes.func.isRequired,
+// };
