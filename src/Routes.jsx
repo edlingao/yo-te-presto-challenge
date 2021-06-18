@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -7,11 +7,19 @@ import {
 import Home from './views/Home';
 
 export default function Routes() {
+  const [user, setUser] = useState('HOLA');
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setUser('HOLA MUNDO');
+  };
   return (
     <Router>
       <Switch>
-        <Route exact path="/">
-          <Home />
+        <Route
+          exact
+          path="/"
+        >
+          <Home user={user} handleLogin={handleLogin} />
         </Route>
         <Route path="/about">
           {/* <About /> */}
