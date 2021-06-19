@@ -1,19 +1,33 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
-// import { useSelector, useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Login from '../components/Login';
+import Blogs from './Blogs';
 import MainContainer from '../components/MainContainer';
+import { logout } from '../store/userSlice';
+import axios from '../axios/axios';
+import toastr from '../toastr/toastr';
 
 export default function Home() {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  axios.interceptors.response.use(
+    (response) => {
+      if (response.status === 401) {
+        toastr.error('Session expired');
+        dispatch(logout());
+        history.push('/');
+      }
+      return response;
+    },
+  );
   const authToken = useSelector((state) => state.loggedStatus.value);
-  // const dispatch = useDispatch();
   return (
     <MainContainer>
       {
         authToken === 'Unauthorized'
           ? <Login />
-          : <h1>Autorizado</h1>
+          : <Blogs />
       }
     </MainContainer>
   );

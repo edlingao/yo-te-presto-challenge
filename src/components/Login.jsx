@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { login } from '../store/userSlice';
 
 import logo from '../svg/logo.svg';
 import axios from '../axios/axios';
@@ -113,46 +115,53 @@ const Footer = styled.footer`
   }
 `;
 
-function login(e, email, password, history) {
-  if (email === '' || password === '') return;
-  e.preventDefault();
-  axios.post(routes.signIn, {
-    email,
-    password,
-  }).then(({ data }) => {
-    console.log(data);
-    history.push('/');
-  }).catch(({ errors }) => {
-    console.log(errors);
-    errors.full_messages.forEach((message) => toastr.error(message));
-  });
-}
-
-function registerEvent(e, email, password, confirmedPsw, history) {
-  if (email === '' || password === '') return;
-  e.preventDefault();
-  axios.post(routes.register, {
-    email,
-    password,
-    password_confirmation: confirmedPsw,
-  }).then(({ data }) => {
-    if (data.status === 'error') {
-      data.errors.full_messages.forEach((message) => toastr.error(message));
-    }
-    if (data.status === 'success') {
-      toastr.success('Succesfully registered!');
-      history.push('/');
-    }
-  }).catch((error) => {
-    toastr.error(error.message);
-  });
-}
-
 export default function Form({ register = 'false' }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmedPsw, setConfirmedPsw] = useState('');
   const history = useHistory();
+  const dispatch = useDispatch();
+  const loginEvent = (e) => {
+    if (email === '' || password === '') return;
+    e.preventDefault();
+    axios.post(routes.signIn, {
+      email,
+      password,
+    }).then(({ headers, data }) => {
+      if (data.success === false) {
+        data.errors.forEach((err) => toastr.error(err));
+      } else {
+        dispatch(login({
+          accessToken: headers['access-token'],
+          client: headers.client,
+          uid: headers.uid,
+        }));
+        history.push('/');
+      }
+    }).catch(({ errors }) => {
+      toastr.error(errors);
+    });
+  };
+
+  const registerEvent = (e) => {
+    if (email === '' || password === '') return;
+    e.preventDefault();
+    axios.post(routes.register, {
+      email,
+      password,
+      password_confirmation: confirmedPsw,
+    }).then(({ data }) => {
+      if (data.status === 'error') {
+        data.errors.full_messages.forEach((message) => toastr.error(message));
+      }
+      if (data.status === 'success') {
+        toastr.success('Succesfully registered!');
+        history.push('/');
+      }
+    }).catch((error) => {
+      toastr.error(error.message);
+    });
+  };
 
   return (
     <LoginForm>
@@ -192,8 +201,8 @@ export default function Form({ register = 'false' }) {
           }
           onClick={
             register === 'true'
-              ? (event) => registerEvent(event, email, password, confirmedPsw, history)
-              : (event) => login(event, email, password, history)
+              ? (event) => registerEvent(event)
+              : (event) => loginEvent(event)
           }
         />
         { register === 'true'

@@ -1,12 +1,13 @@
 import axios from 'axios';
-
-const accesToken = localStorage.getItem('token') != null
-  ? localStorage.getItem('token')
-  : null;
 // Setting axios headers
+const accessToken = localStorage.getItem('AccessTokenObj') !== null
+  ? JSON.parse(localStorage.getItem('AccessTokenObj'))
+  : {};
 
 axios.defaults.headers = {
-  'access-token': accesToken,
+  'access-token': accessToken.accessToken,
+  client: accessToken.client,
+  uid: accessToken.uid,
   'Content-Type': 'application/json',
 };
 axios.defaults.validateStatus = (status) => status >= 200;
