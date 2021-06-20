@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import propType from 'prop-types';
+import { useHistory } from 'react-router-dom';
+import RemoveIcon from '@material-ui/icons/Remove';
+import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
+import ContentEditable from 'react-contenteditable';
+import Button from './Button';
+import axios from '../axios/axios';
+import routes from '../axios/routes';
+import toastr from '../toastr/toastr';
 
 const Blog = styled.div`
   background: rgba(20, 33, 61, 0.5);
@@ -12,15 +21,15 @@ const Blog = styled.div`
   margin: auto;
   margin-top: 1.25rem;
   padding: 0.5rem 1.875rem;
-  cursor: pointer;
+  position: relative;
 
-  ${({ full }) => (full ? 'height: 100%;' : '')}
+  ${({ full }) => (!full ? 'cursor: pointer;' : '')}
   h1.title{
     text-align: center;
     font-size: 2.25rem;
     font-weight: 700;
   }
-  p.description {
+  .description {
     white-space: pre-wrap;
     font-weight: 400;
     font-size: 1.5rem;
@@ -32,22 +41,121 @@ const Blog = styled.div`
     color: white;
   }
 
+  .controls-section {
+    position: absolute;
+    z-index: -1;
+    top: -1rem;
+    left: -1rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: calc(100% + 2rem);
+  }
+
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    .controls-section {
+      width: 99%;
+      left: 0.25%;
+    }
+  }
+
 `;
 
-export default function BlogComponent({ title, comment }) {
+export default function BlogComponent({
+  title,
+  comment,
+  full,
+  id,
+  controlls,
+}) {
+  const history = useHistory();
+  const [edit, setEdit] = useState(false);
+  const [editableTitle, setTitle] = useState(title);
+  const [editableComment, setComment] = useState(comment);
+  const titleRef = React.createRef();
   const showBlog = () => {
-    // console.log('showBlog');
+    if (!full) {
+      history.push(`/blog/${id}`);
+    }
+  };
+  const deletePost = async () => {
+    await axios.delete(routes.deletePost(id));
+    toastr.success('Post deleted succesfully');
+    history.push('/');
+  };
+  const editPost = () => {
+    setEdit(!edit);
+    if (!edit) {
+      // NOTE: This doesn't make any sense,I know. but some how it works?
+      // here is the context if you want to laugh a little bit: https://stackoverflow.com/a/37162116
+      const titleEl = titleRef.current;
+      setTimeout(() => {
+        titleEl.focus();
+      }, 0);
+    } else {
+      axios.put(routes.editPost(id), {
+        post: {
+          title: editableTitle,
+          comment: editableComment,
+        },
+      }).then(() => {
+        history.push(`/blog/${id}`);
+        toastr.success('Blog succesfully updated!');
+      }).catch((err) => {
+        toastr.error(err);
+      });
+    }
   };
 
+  useEffect(async () => {
+    setTitle(title);
+    setComment(comment);
+  }, [title, comment]);
   return (
-    <Blog onClick={showBlog}>
-      <h1 className="title">{title}</h1>
-      <p className="description">{comment}</p>
+    <Blog onClick={showBlog} full={full}>
+      <h1 className="title">
+        <ContentEditable
+          html={editableTitle}
+          disabled={!edit}
+          onChange={(e) => setTitle(e.target.value)}
+          innerRef={titleRef}
+        />
+      </h1>
+      <div className="description">
+        <ContentEditable
+          html={editableComment}
+          disabled={!edit}
+          onChange={(e) => setComment(e.target.value)}
+        />
+      </div>
+      {controlls ? (
+        <div className="controls-section">
+          <Button circle bgColor="#D94E4E" height="3rem" width="3rem" onClick={deletePost}>
+            <RemoveIcon style={{ fontSize: 50 }} />
+          </Button>
+          <Button circle height="3rem" width="3rem" bgColor="black" onClick={editPost}>
+            {!edit
+              ? <EditIcon style={{ fontSize: 40, color: '#FCA311' }} />
+              : <SaveIcon style={{ fontSize: 40, color: '#FCA311' }} />}
+          </Button>
+        </div>
+      ) : ''}
     </Blog>
   );
 }
 
+BlogComponent.defaultProps = {
+  full: false,
+  controlls: false,
+};
+
 BlogComponent.propTypes = {
   title: propType.string.isRequired,
   comment: propType.string.isRequired,
+  full: propType.bool,
+  id: propType.number.isRequired,
+  controlls: propType.bool,
 };

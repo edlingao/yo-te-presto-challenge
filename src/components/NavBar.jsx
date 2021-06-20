@@ -5,25 +5,9 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { logout } from '../store/userSlice';
 import logo from '../svg/logo.svg';
+import Button from './Button';
 
 export default function NavBar() {
-  const Button = styled.button`
-      background: #FCA311;
-      width: 1.8rem;
-      height: 1.8rem;
-      border: 0;
-      cursor: pointer;
-      outline: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      ${({ rectangle }) => (rectangle ? 'width: 4rem;' : '')}
-      ${({ circle }) => (circle ? 'border-radius: 50%;' : '')}
-      .icon {
-        color: #14213D;
-        font-size: 0;
-      }
-  `;
   const Nav = styled.nav`
     width: 100%;
     height: 3.125rem;

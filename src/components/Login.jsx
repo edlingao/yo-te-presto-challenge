@@ -25,7 +25,12 @@ const LoginForm = styled.form`
     
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(20px);
-    box-shadow: inset 0px 0px 20px 5px rgba(255, 255, 255, 0.25);  
+    box-shadow: inset 0px 0px 20px 5px rgba(255, 255, 255, 0.25);
+
+    @media screen and (max-width: 600px) {
+      width: 100%;
+      margin: 0;
+    }
 `;
 const LoginHeader = styled.header`
   width: 100%;
@@ -53,6 +58,22 @@ const LoginHeader = styled.header`
       color: #6C4C94;
       text-decoration: none;
       margin-left: .5rem;
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    .word-title {
+      h1{
+        font-weight: 100;
+        font-size: 2.3rem;
+      }
+    }
+    .logo {
+      width: 50%;
+      height: 50%;
+    }
+    .floating-text {
+      left: 0.5rem;
     }
   }
 `;
