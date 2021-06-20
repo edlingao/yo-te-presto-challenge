@@ -4,7 +4,7 @@ import SendIcon from '@material-ui/icons/Send';
 import { useDispatch } from 'react-redux';
 import axios from '../axios/axios';
 import routes from '../axios/routes';
-import { addBlog } from '../store/blogsSlice';
+import { setAllBlogs } from '../store/blogsSlice';
 
 const Container = styled.form`
     background: rgba(20, 33, 61, 0.5);
@@ -79,10 +79,9 @@ export default function CreateBlog() {
         comment,
       },
     }).then(() => {
-      dispatch(addBlog({
-        title,
-        comment,
-      }));
+      axios.get(routes.getPosts).then((response) => {
+        dispatch(setAllBlogs(response.data));
+      });
     });
   };
   return (

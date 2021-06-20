@@ -49,7 +49,7 @@ export default function Blogs() {
         <CreateBlog />
         <div className="blogs-container">
           {blogs.map(({ title, comment, id }) => (
-            <Blog title={title} comment={comment} key={id} />
+            <Blog title={title} comment={comment} id={id} key={id} />
           ))}
         </div>
       </div>

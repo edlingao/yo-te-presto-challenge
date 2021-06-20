@@ -9,7 +9,7 @@ export const exampleSlice = createSlice({
   },
   reducers: {
     setAllBlogs(state, { payload }) {
-      state.value = payload;
+      state.value = payload.reverse();
     },
     addBlog(state, { payload }) {
       const newBlog = {
