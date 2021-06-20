@@ -54,6 +54,14 @@ const Blog = styled.div`
     width: calc(100% + 2rem);
   }
 
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    .controls-section {
+      width: 99%;
+      left: 0.25%;
+    }
+  }
+
 `;
 
 export default function BlogComponent({
